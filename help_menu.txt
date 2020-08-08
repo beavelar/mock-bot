@@ -1,0 +1,2 @@
+**__Help Menu__**
+**Mock a typed message**: @mock *message*
