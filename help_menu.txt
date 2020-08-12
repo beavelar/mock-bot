@@ -1,2 +1,3 @@
-**__Help Menu__**
-**Mock a typed message**: @mock *message*
+__Help Menu__
+Mock a typed message: **@mock** *"message"*
+Mock x number of messages (Max of 10): **@mock** *"@target"* *"number of messages"*

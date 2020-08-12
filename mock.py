@@ -1,3 +1,4 @@
+import re
 import discord
 
 ##########################################################################################
@@ -19,7 +20,9 @@ def MoCk(message):
     cap = True
 
     for char in message:
-        if char != ' ':
+        if char == ' ':
+            mock += ' '
+        else:
             if cap:
                 mock += char.upper()
             else:
@@ -34,9 +37,45 @@ def MoCk(message):
 
 @client.event
 async def on_message(message):
+    # TODO: Implement ability to mock specific messages provided a message link
+    #content = message.content[message.content.find('>') + 2:]
+    #if ('https://discordapp.com/channels' in content):
+        #msgId = int(content.split('/')[5])
+        #fetchedMessage = await message.channel.fetch_message(msgId)
+
+    # Message tags mock bot and message isn't from mock bot
     if (client.user in message.mentions) and (client.user != message.author):
+        # Help menu
         if ('help' in message.content):
             await message.channel.send(HELP_MENU)
+        
+        # Mock x number of messages of target user
+        elif ((len(message.mentions) > 1) and (client.user != message.mentions[1])):
+            numMessages = 0
+
+            try:
+                parsedMessage = message.content.split('>')
+                parsedMessage = parsedMessage[len(parsedMessage) - 1]
+                numMessages = int(re.search(r'\d+', parsedMessage).group())
+            except:
+                print('No target number found in Discord message')
+            
+            if numMessages > 10:
+                await message.channel.send('MoCk BoT can only mock 10 messages or less at a time')
+            elif numMessages != 0:
+                targetUser = message.mentions[1]
+                messages = await message.channel.history(limit=1000).flatten()
+
+                filter(lambda x: x.author == 'bavelar', messages)
+                messages = messages[0:numMessages]
+
+                for msg in messages:
+                    mockedMessage = MoCk(msg.content)
+                    print("Mocked: " + mockedMessage)
+                    print("Unmocked: " + msg.content)
+                    await message.channel.send(mockedMessage)
+        
+        # Mock provided message
         else:
             mockedMessage = MoCk(message.content)
             await message.channel.send(mockedMessage)
