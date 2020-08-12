@@ -46,11 +46,11 @@ async def on_message(message):
     # Message tags mock bot and message isn't from mock bot
     if (client.user in message.mentions) and (client.user != message.author):
         # Help menu
-        if ('help' in message.content):
+        if 'help' in message.content:
             await message.channel.send(HELP_MENU)
         
         # Mock x number of messages of target user
-        elif ((len(message.mentions) > 1) and (client.user != message.mentions[1])):
+        elif len(message.mentions) > 1:
             numMessages = 0
 
             try:
@@ -66,19 +66,19 @@ async def on_message(message):
                 targetUser = message.mentions[1]
                 messages = await message.channel.history(limit=1000).flatten()
 
-                filter(lambda x: x.author == 'bavelar', messages)
+                filter(lambda x: x.author == targetUser, messages)
                 messages = messages[0:numMessages]
 
                 for msg in messages:
                     mockedMessage = MoCk(msg.content)
-                    print("Mocked: " + mockedMessage)
-                    print("Unmocked: " + msg.content)
                     await message.channel.send(mockedMessage)
         
         # Mock provided message
         else:
             mockedMessage = MoCk(message.content)
             await message.channel.send(mockedMessage)
+        
+        await message.delete()
 
 ##########################################################################################
 # On_ready handler - Executes after bot starts up
