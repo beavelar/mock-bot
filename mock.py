@@ -122,6 +122,7 @@ async def on_message(message):
 
     # Message isn't from mock bot and message includes !mock
     if (client.user != message.author) and (spaceDelimMessage[0] == MOCK_TRIGGER):
+        await deleteMessage(message)
         msgWithoutTrg = message.content.replace('!mock ', '')
 
         # Prompts user to provide command if not provided
@@ -155,8 +156,6 @@ async def on_message(message):
         else:
             mockedMessage = MoCk(msgWithoutTrg)
             await sendMessage(message.channel, mockedMessage)
-        
-        await deleteMessage(message)
 
 #########################################################################################################
 # On_ready handler - Executes after bot starts up
