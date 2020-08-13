@@ -150,7 +150,7 @@ async def on_message(message):
 
                 for msg in filterMessages:
                     mockedMessage = MoCk(msg.content)
-                    await sendMessage(message.channel, mockedMessage)
+                    await sendMessage(message.channel, targetUser.mention + ' ' + mockedMessage)
         
         # Mock provided message
         else:
