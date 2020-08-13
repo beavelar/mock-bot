@@ -4,11 +4,24 @@ import discord
 ##########################################################################################
 # Global definitions
 
-tokenFile = open('.env', 'r')
-helpMenuFile = open('help_menu.txt', 'r')
+try:
+    tokenFile = open('.env', 'r')
+    helpMenuFile = open('help_menu.txt', 'r')
+except Exception as ex:
+    print('Exception caught attempting to open environment files')
+    print('Please verify .env and help_menu.txt files exist and are in the correct location')
+    print('Exiting..')
+    print(str(ex))
+    exit(1)
 
-BOT_TOKEN = tokenFile.read()
-HELP_MENU = helpMenuFile.read()
+try:
+    BOT_TOKEN = tokenFile.read()
+    HELP_MENU = helpMenuFile.read()
+except Exception as ex:
+    print('Exception caught attempting to read environment files')
+    print('Exiting..')
+    print(str(ex))
+    exit(1)
 
 client = discord.Client()
 
