@@ -4,5 +4,6 @@ Help Menu
 ----------
 
 Mock a typed message: !mock "message"
+Mock last message sent from user: !mock "@target"
 Mock x number of messages (Max of 10): !mock "@target" "number of messages"
 ```

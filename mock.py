@@ -51,7 +51,7 @@ def MoCk(message):
 # Parses and returns the number of messages to mock
 
 async def getNumOfMsgs(channel, message):
-    numberOfMessages = 0
+    numberOfMessages = -1
 
     try:
         parsedMessage = message.split('>')
@@ -62,7 +62,6 @@ async def getNumOfMsgs(channel, message):
         print('Exception caught in getNumOfMsgs')
         print(str(ex))
         print('-----------------------------------------------------------------------------\n')
-        await sendMessage(channel, 'No target number found in Discord message')
     
     return numberOfMessages
 
@@ -135,14 +134,18 @@ async def on_message(message):
         
         # Mock x number of messages of target user
         elif len(message.mentions) > 0:
+            targetUser = message.mentions[0]
             numOfMessages = await getNumOfMsgs(message.channel, msgWithoutTrg)
             
             if numOfMessages > 10:
                 await sendMessage(message.channel, 'MoCk BoT can only mock 10 messages or less at a time')
-            elif numOfMessages != 0:
-                targetUser = message.mentions[0]
+            else:
                 messageHistory = await getMessageHistory(message.channel, 1000)
-                filterMessages = filterMessageHistory(messageHistory, targetUser, numOfMessages)
+
+                if numOfMessages == -1:
+                    filterMessages = filterMessageHistory(messageHistory, targetUser, 1)
+                else:
+                    filterMessages = filterMessageHistory(messageHistory, targetUser, numOfMessages)
 
                 for msg in filterMessages:
                     mockedMessage = MoCk(msg.content)
