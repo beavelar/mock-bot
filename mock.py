@@ -4,6 +4,8 @@ import discord
 ##########################################################################################
 # Global definitions
 
+MOCK_TRIGGER = '!mock'
+
 try:
     tokenFile = open('.env', 'r')
     helpMenuFile = open('help_menu.txt', 'r')
@@ -56,27 +58,35 @@ async def on_message(message):
         #msgId = int(content.split('/')[5])
         #fetchedMessage = await message.channel.fetch_message(msgId)
 
-    # Message tags mock bot and message isn't from mock bot
-    if (client.user in message.mentions) and (client.user != message.author):
+    spaceDelimMessage = message.content.split(' ')
+
+    # Message isn't from mock bot and message includes !mock
+    if (client.user != message.author) and (spaceDelimMessage[0] == MOCK_TRIGGER):
+        msgOnly = message.content.replace('!mock ', '')
+
+        # Prompts user to provide command if not provided
+        if len(spaceDelimMessage) <= 1:
+            await message.channel.send('Please provide a command\nUse ***!mock help*** for a help menu')
+
         # Help menu
-        if 'help' in message.content:
+        elif spaceDelimMessage[1] == 'help':
             await message.channel.send(HELP_MENU)
         
         # Mock x number of messages of target user
-        elif len(message.mentions) > 1:
+        elif len(message.mentions) > 0:
             numMessages = 0
-
+            
             try:
-                parsedMessage = message.content.split('>')
+                parsedMessage = msgOnly.split('>')
                 parsedMessage = parsedMessage[len(parsedMessage) - 1]
                 numMessages = int(re.search(r'\d+', parsedMessage).group())
             except:
-                print('No target number found in Discord message')
+                await message.channel.send('No target number found in Discord message')
             
             if numMessages > 10:
                 await message.channel.send('MoCk BoT can only mock 10 messages or less at a time')
             elif numMessages != 0:
-                targetUser = message.mentions[1]
+                targetUser = message.mentions[0]
                 messages = await message.channel.history(limit=1000).flatten()
 
                 filter(lambda x: x.author == targetUser, messages)
@@ -88,7 +98,7 @@ async def on_message(message):
         
         # Mock provided message
         else:
-            mockedMessage = MoCk(message.content)
+            mockedMessage = MoCk(msgOnly)
             await message.channel.send(mockedMessage)
         
         await message.delete()
