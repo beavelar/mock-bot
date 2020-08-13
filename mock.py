@@ -81,10 +81,10 @@ async def getMessageHistory(channel, msgLimit):
 # Filters the message history for the target user
 
 def filterMessageHistory(messages, user, msgLimit):
-    filter(lambda x: x.author == user, messages)
-    messages = messages[0:msgLimit]
+    filteredMessages = [msg for msg in messages if msg.author == user]
+    filteredMessages = filteredMessages[0:msgLimit]
 
-    return messages
+    return filteredMessages
 
 #########################################################################################################
 # Send message out to desired channel
