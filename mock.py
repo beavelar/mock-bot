@@ -1,7 +1,7 @@
 import re
 import discord
 
-##########################################################################################
+#########################################################################################################
 # Global definitions
 
 MOCK_TRIGGER = '!mock'
@@ -27,7 +27,7 @@ except Exception as ex:
 
 client = discord.Client()
 
-##########################################################################################
+#########################################################################################################
 # Mock function to mock incoming message
 
 def MoCk(message):
@@ -47,7 +47,68 @@ def MoCk(message):
     
     return mock
 
-##########################################################################################
+#########################################################################################################
+# Parses and returns the number of messages to mock
+
+async def getNumOfMsgs(channel, message):
+    numberOfMessages = 0
+
+    try:
+        parsedMessage = message.split('>')
+        parsedMessage = parsedMessage[len(parsedMessage) - 1]
+        numberOfMessages = int(re.search(r'\d+', parsedMessage).group())
+    except Exception as ex:
+        print('-----------------------------------------------------------------------------')
+        print('Exception caught in getNumOfMsgs')
+        print(str(ex))
+        print('-----------------------------------------------------------------------------\n')
+        await sendMessage(channel, 'No target number found in Discord message')
+    
+    return numberOfMessages
+
+#########################################################################################################
+# Retrieves the channel message history (Limited number of messages to lower sizes)
+
+async def getMessageHistory(channel, msgLimit):
+    print('-----------------------------------------------------------------------------')
+    print('Retrieving Message History')
+    print('Channel Name: ' + channel.name)
+    print('\nMessage History Limit:\n' + str(msgLimit))
+    print('-----------------------------------------------------------------------------\n')
+    return await channel.history(limit=msgLimit).flatten()
+
+#########################################################################################################
+# Filters the message history for the target user
+
+def filterMessageHistory(messages, user, msgLimit):
+    filter(lambda x: x.author == user, messages)
+    messages = messages[0:msgLimit]
+
+    return messages
+
+#########################################################################################################
+# Send message out to desired channel
+
+async def sendMessage(channel, message):
+    print('-----------------------------------------------------------------------------')
+    print('Sending Message')
+    print('Channel Name: ' + channel.name)
+    print('\nMessage:\n' + message)
+    print('-----------------------------------------------------------------------------\n')
+    await channel.send(message)
+
+#########################################################################################################
+# Delete desired message
+
+async def deleteMessage(message):
+    print('-----------------------------------------------------------------------------')
+    print('Deleting Message')
+    print('Author: ' + message.author.display_name)
+    print('\nMessage:\n' + message.clean_content)
+    print('-----------------------------------------------------------------------------\n')
+    await message.delete()
+    
+#########################################################################################################
 # On_message handler - Executes after message is detected
 
 @client.event
@@ -62,55 +123,46 @@ async def on_message(message):
 
     # Message isn't from mock bot and message includes !mock
     if (client.user != message.author) and (spaceDelimMessage[0] == MOCK_TRIGGER):
-        msgOnly = message.content.replace('!mock ', '')
+        msgWithoutTrg = message.content.replace('!mock ', '')
 
         # Prompts user to provide command if not provided
         if len(spaceDelimMessage) <= 1:
-            await message.channel.send('Please provide a command\nUse ***!mock help*** for a help menu')
+            await sendMessage(message.channel, 'Please provide a command\nUse ***!mock help*** for a help menu')
 
         # Help menu
         elif spaceDelimMessage[1] == 'help':
-            await message.channel.send(HELP_MENU)
+            await sendMessage(message.channel, HELP_MENU)
         
         # Mock x number of messages of target user
         elif len(message.mentions) > 0:
-            numMessages = 0
+            numOfMessages = await getNumOfMsgs(message.channel, msgWithoutTrg)
             
-            try:
-                parsedMessage = msgOnly.split('>')
-                parsedMessage = parsedMessage[len(parsedMessage) - 1]
-                numMessages = int(re.search(r'\d+', parsedMessage).group())
-            except:
-                await message.channel.send('No target number found in Discord message')
-            
-            if numMessages > 10:
-                await message.channel.send('MoCk BoT can only mock 10 messages or less at a time')
-            elif numMessages != 0:
+            if numOfMessages > 10:
+                await sendMessage(message.channel, 'MoCk BoT can only mock 10 messages or less at a time')
+            elif numOfMessages != 0:
                 targetUser = message.mentions[0]
-                messages = await message.channel.history(limit=1000).flatten()
+                messageHistory = await getMessageHistory(message.channel, 1000)
+                filterMessages = filterMessageHistory(messageHistory, targetUser, numOfMessages)
 
-                filter(lambda x: x.author == targetUser, messages)
-                messages = messages[0:numMessages]
-
-                for msg in messages:
+                for msg in filterMessages:
                     mockedMessage = MoCk(msg.content)
-                    await message.channel.send(mockedMessage)
+                    await sendMessage(message.channel, mockedMessage)
         
         # Mock provided message
         else:
-            mockedMessage = MoCk(msgOnly)
-            await message.channel.send(mockedMessage)
+            mockedMessage = MoCk(msgWithoutTrg)
+            await sendMessage(message.channel, mockedMessage)
         
-        await message.delete()
+        await deleteMessage(message)
 
-##########################################################################################
+#########################################################################################################
 # On_ready handler - Executes after bot starts up
 
 @client.event
 async def on_ready():
     print(f'{client.user} has connected')
 
-##########################################################################################
+#########################################################################################################
 # Startup command to start the bot
 
 client.run(BOT_TOKEN)
