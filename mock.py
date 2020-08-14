@@ -66,6 +66,32 @@ async def getNumOfMsgs(channel, message):
     return numberOfMessages
 
 #########################################################################################################
+# Retrieves specific message provided the Discord message URL
+
+async def fetchMessage(channel, url):
+    parsedMessage = url.split('/')
+
+    # Message id will be the last param in Discord URL
+    messageId = int(parsedMessage[len(parsedMessage) - 1])
+
+    print('-----------------------------------------------------------------------------')
+    print('Fetching Message')
+    print('Channel Name: ' + channel.name)
+    print('\nMessage URL: ' + url)
+    print('\nMessage ID: ' + str(messageId))
+    print('-----------------------------------------------------------------------------\n')
+
+    fetchedMessage = await channel.fetch_message(messageId)
+
+    print('-----------------------------------------------------------------------------')
+    print('Message Fetched')
+    print('Author: ' + fetchedMessage.author.display_name)
+    print('\nMessage:\n' + fetchedMessage.content)
+    print('-----------------------------------------------------------------------------\n')
+
+    return fetchedMessage
+
+#########################################################################################################
 # Retrieves the channel message history (Limited number of messages to lower sizes)
 
 async def getMessageHistory(channel, msgLimit):
@@ -112,12 +138,6 @@ async def deleteMessage(message):
 
 @client.event
 async def on_message(message):
-    # TODO: Implement ability to mock specific messages provided a message link
-    #content = message.content[message.content.find('>') + 2:]
-    #if ('https://discordapp.com/channels' in content):
-        #msgId = int(content.split('/')[5])
-        #fetchedMessage = await message.channel.fetch_message(msgId)
-
     spaceDelimMessage = message.content.split(' ')
 
     # Message isn't from mock bot and message includes !mock
@@ -132,6 +152,12 @@ async def on_message(message):
         # Help menu
         elif spaceDelimMessage[1] == 'help':
             await sendMessage(message.channel, HELP_MENU)
+
+        # Mock a specific message
+        elif ('https://discordapp.com/channels' in spaceDelimMessage[1]):
+            fetchedMessage = await fetchMessage(message.channel, spaceDelimMessage[1])
+            mockedMessage = MoCk(fetchedMessage.content)
+            await sendMessage(message.channel, mockedMessage)
         
         # Mock x number of messages of target user
         elif len(message.mentions) > 0:
