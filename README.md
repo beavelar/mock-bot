@@ -36,7 +36,7 @@ The following are permission requirements needed by the MoCk BoT
 - Invite Discord bot into your Discord server with proper permissions
   - [Inviting Your Bot Guide](https://discordpy.readthedocs.io/en/latest/discord.html#inviting-your-bot)
   - View [Bot Permission Requirements](#bot-permission-requirements) for the required permissions  
-- In the base directory of the MoCk BoT project, create an empty .env file
+- After cloning the repository, you should have a **MoCk-BoT** directory, navigate to **MoCk-BoT/environment** and create an empty .env file
   - This will contain our bot secret token
 - Retrieve bot secret token
   - In Discord developer page, navigate to "Bot"

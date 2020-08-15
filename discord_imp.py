@@ -1,3 +1,7 @@
+from discord import NotFound
+from discord import Forbidden
+from discord import HTTPException
+
 #########################################################################################################
 # Retrieves specific message provided the Discord message URL
 #
@@ -30,7 +34,7 @@ async def fetchMessage(bot, channel, url):
         print('Author: ' + fetchedMessage.author.display_name)
         print('\nMessage:\n' + fetchedMessage.content)
         print('-----------------------------------------------------------------------------\n')
-    except NotFound as ex:
+    except discord.NotFound as ex:
         print('-----------------------------------------------------------------------------')
         print('NotFound exception caught in fetchMessage')
         print('The specified message was not found')
@@ -38,7 +42,7 @@ async def fetchMessage(bot, channel, url):
         print('\nMessage URL: ' + url)
         print('\nMessage ID: ' + str(messageId))
         print('-----------------------------------------------------------------------------\n')
-    except Forbidden as ex:
+    except discord.Forbidden as ex:
         print('-----------------------------------------------------------------------------')
         print('Forbidden exception caught in fetchMessage')
         print(bot.display_name + ' does not have the correct permissions to retrieve the message')
@@ -46,7 +50,7 @@ async def fetchMessage(bot, channel, url):
         print('\nMessage URL: ' + url)
         print('\nMessage ID: ' + str(messageId))
         print('-----------------------------------------------------------------------------\n')
-    except HTTPException as ex:
+    except discord.HTTPException as ex:
         print('-----------------------------------------------------------------------------')
         print('HTTPException exception caught in fetchMessage')
         print('Discord fetch_message function failed to retrieve message')
@@ -78,13 +82,13 @@ async def getMessageHistory(bot, channel, msgLimit):
     
     try:
         messageHistory = await channel.history(limit=msgLimit).flatten()
-    except Forbidden as ex:
+    except discord.Forbidden as ex:
         print('-----------------------------------------------------------------------------')
         print('Forbidden exception caught in getMessageHistory')
         print(bot.display_name + ' does not have the correct permissions to retrieve the message')
         print('Channel Name: ' + channel.name)
         print('-----------------------------------------------------------------------------\n')
-    except HTTPException as ex:
+    except discord.HTTPException as ex:
         print('-----------------------------------------------------------------------------')
         print('HTTPException exception caught in getMessageHistory')
         print('Discord history function failed to retrieve message history')
@@ -110,14 +114,14 @@ async def sendMessage(bot, channel, message):
     
     try:
         await channel.send(message)
-    except HTTPException as ex:
+    except discord.HTTPException as ex:
         print('-----------------------------------------------------------------------------')
         print('HTTPException exception caught in sendMessage')
         print('Discord send function failed to send message')
         print('Channel Name: ' + channel.name)
         print('\nMessage:\n' + message)
         print('-----------------------------------------------------------------------------\n')
-    except Forbidden as ex:
+    except discord.Forbidden as ex:
         print('-----------------------------------------------------------------------------')
         print('Forbidden exception caught in sendMessage')
         print(bot.display_name + ' does not have the correct permissions to retrieve the message')
@@ -140,7 +144,7 @@ async def deleteMessage(message):
 
     try:
         await message.delete()
-    except HTTPException as ex:
+    except discord.HTTPException as ex:
         print('-----------------------------------------------------------------------------')
         print('HTTPException exception caught in deleteMessage')
         print('Discord delete function failed to delete desired message')
