@@ -10,8 +10,8 @@ from discord_imp import *
 MOCK_TRIGGER = '!mock'
 
 try:
-    tokenFile = open('.env', 'r')
-    helpMenuFile = open('help_menu.txt', 'r')
+    tokenFile = open('environment/.env', 'r')
+    helpMenuFile = open('environment/help_menu.txt', 'r')
 except Exception as ex:
     print('Exception caught attempting to open environment files')
     print('Please verify .env and help_menu.txt files exist and are in the correct location')
