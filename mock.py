@@ -29,6 +29,11 @@ client = discord.Client()
 
 #########################################################################################################
 # Mock function to mock incoming message
+#
+# Parameters
+# message: string
+#
+# Returns: string
 
 def MoCk(message):
     mock = ""
@@ -49,6 +54,12 @@ def MoCk(message):
 
 #########################################################################################################
 # Parses and returns the number of messages to mock
+#
+# Parameters
+# channel: Channel (Discord API)
+# message: string
+#
+# Returns: integer
 
 async def getNumOfMsgs(channel, message):
     numberOfMessages = -1
@@ -56,7 +67,12 @@ async def getNumOfMsgs(channel, message):
     try:
         parsedMessage = message.split('>')
         parsedMessage = parsedMessage[len(parsedMessage) - 1]
-        numberOfMessages = int(re.search(r'\d+', parsedMessage).group())
+        numberOfMessages = re.search(r'\d+', parsedMessage)
+        
+        if numberOfMessages is None:
+            numberOfMessages = -1
+        else:
+            numberOfMessages = int(re.search(r'\d+', parsedMessage).group())
     except Exception as ex:
         print('-----------------------------------------------------------------------------')
         print('Exception caught in getNumOfMsgs')
@@ -67,8 +83,15 @@ async def getNumOfMsgs(channel, message):
 
 #########################################################################################################
 # Retrieves specific message provided the Discord message URL
+#
+# Parameters
+# channel: Channel (Discord API)
+# url: string
+#
+# Returns: None or string
 
 async def fetchMessage(channel, url):
+    fetchMessage = None
     parsedMessage = url.split('/')
 
     # Message id will be the last param in Discord URL
@@ -81,29 +104,84 @@ async def fetchMessage(channel, url):
     print('\nMessage ID: ' + str(messageId))
     print('-----------------------------------------------------------------------------\n')
 
-    fetchedMessage = await channel.fetch_message(messageId)
-
-    print('-----------------------------------------------------------------------------')
-    print('Message Fetched')
-    print('Author: ' + fetchedMessage.author.display_name)
-    print('\nMessage:\n' + fetchedMessage.content)
-    print('-----------------------------------------------------------------------------\n')
+    try:
+        fetchedMessage = await channel.fetch_message(messageId)
+        
+        print('-----------------------------------------------------------------------------')
+        print('Message Fetched')
+        print('Author: ' + fetchedMessage.author.display_name)
+        print('\nMessage:\n' + fetchedMessage.content)
+        print('-----------------------------------------------------------------------------\n')
+    except NotFound as ex:
+        print('-----------------------------------------------------------------------------')
+        print('NotFound exception caught in fetchMessage')
+        print('The specified message was not found')
+        print('Channel Name: ' + channel.name)
+        print('\nMessage URL: ' + url)
+        print('\nMessage ID: ' + str(messageId))
+        print('-----------------------------------------------------------------------------\n')
+    except Forbidden as ex:
+        print('-----------------------------------------------------------------------------')
+        print('Forbidden exception caught in fetchMessage')
+        print(client.user.display_name + ' does not have the correct permissions to retrieve the message')
+        print('Channel Name: ' + channel.name)
+        print('\nMessage URL: ' + url)
+        print('\nMessage ID: ' + str(messageId))
+        print('-----------------------------------------------------------------------------\n')
+    except HTTPException as ex:
+        print('-----------------------------------------------------------------------------')
+        print('HTTPException exception caught in fetchMessage')
+        print('Discord fetch_message function failed to retrieve message')
+        print('Channel Name: ' + channel.name)
+        print('\nMessage URL: ' + url)
+        print('\nMessage ID: ' + str(messageId))
+        print('-----------------------------------------------------------------------------\n')
 
     return fetchedMessage
 
 #########################################################################################################
 # Retrieves the channel message history (Limited number of messages to lower sizes)
+#
+# Parameters
+# channel: Channel (Discord API)
+# msgLimit: integer
+#
+# Returns: None or List of Message (Discord API)
 
 async def getMessageHistory(channel, msgLimit):
+    messageHistory = None
+
     print('-----------------------------------------------------------------------------')
     print('Retrieving Message History')
     print('Channel Name: ' + channel.name)
-    print('\nMessage History Limit:\n' + str(msgLimit))
+    print('\nMessage History Limit: ' + str(msgLimit))
     print('-----------------------------------------------------------------------------\n')
-    return await channel.history(limit=msgLimit).flatten()
+    
+    try:
+        messageHistory = await channel.history(limit=msgLimit).flatten()
+    except Forbidden as ex:
+        print('-----------------------------------------------------------------------------')
+        print('Forbidden exception caught in getMessageHistory')
+        print(client.user.display_name + ' does not have the correct permissions to retrieve the message')
+        print('Channel Name: ' + channel.name)
+        print('-----------------------------------------------------------------------------\n')
+    except HTTPException as ex:
+        print('-----------------------------------------------------------------------------')
+        print('HTTPException exception caught in getMessageHistory')
+        print('Discord history function failed to retrieve message history')
+        print('Channel Name: ' + channel.name)
+        print('-----------------------------------------------------------------------------\n')
+
+    return messageHistory
 
 #########################################################################################################
 # Filters the message history for the target user
+#
+# Parameters
+# channel: Channel (Discord API)
+# msgLimit: integer
+#
+# Returns: None or List of Message (Discord API)
 
 def filterMessageHistory(messages, user, msgLimit):
     filteredMessages = [msg for msg in messages if msg.author == user]
@@ -113,6 +191,10 @@ def filterMessageHistory(messages, user, msgLimit):
 
 #########################################################################################################
 # Send message out to desired channel
+#
+# Parameters
+# channel: Channel (Discord API)
+# message: string
 
 async def sendMessage(channel, message):
     print('-----------------------------------------------------------------------------')
@@ -120,10 +202,29 @@ async def sendMessage(channel, message):
     print('Channel Name: ' + channel.name)
     print('\nMessage:\n' + message)
     print('-----------------------------------------------------------------------------\n')
-    await channel.send(message)
+    
+    try:
+        await channel.send(message)
+    except HTTPException as ex:
+        print('-----------------------------------------------------------------------------')
+        print('HTTPException exception caught in sendMessage')
+        print('Discord send function failed to send message')
+        print('Channel Name: ' + channel.name)
+        print('\nMessage:\n' + message)
+        print('-----------------------------------------------------------------------------\n')
+    except Forbidden as ex:
+        print('-----------------------------------------------------------------------------')
+        print('Forbidden exception caught in sendMessage')
+        print(client.user.display_name + ' does not have the correct permissions to retrieve the message')
+        print('Channel Name: ' + channel.name)
+        print('\nMessage:\n' + message)
+        print('-----------------------------------------------------------------------------\n')    
 
 #########################################################################################################
 # Delete desired message
+#
+# Parameters
+# message: Message (Discord API)
 
 async def deleteMessage(message):
     print('-----------------------------------------------------------------------------')
@@ -131,10 +232,22 @@ async def deleteMessage(message):
     print('Author: ' + message.author.display_name)
     print('\nMessage:\n' + message.clean_content)
     print('-----------------------------------------------------------------------------\n')
-    await message.delete()
+
+    try:
+        await message.delete()
+    except HTTPException as ex:
+        print('-----------------------------------------------------------------------------')
+        print('HTTPException exception caught in deleteMessage')
+        print('Discord delete function failed to delete desired message')
+        print('Author: ' + message.author.display_name)
+        print('\nMessage:\n' + message.clean_content)
+        print('-----------------------------------------------------------------------------\n')
     
 #########################################################################################################
 # On_message handler - Executes after message is detected
+#
+# Parameters
+# message: Message (Discord API)
 
 @client.event
 async def on_message(message):
@@ -156,8 +269,12 @@ async def on_message(message):
         # Mock a specific message
         elif ('https://discordapp.com/channels' in spaceDelimMessage[1]):
             fetchedMessage = await fetchMessage(message.channel, spaceDelimMessage[1])
-            mockedMessage = MoCk(fetchedMessage.content)
-            await sendMessage(message.channel, mockedMessage)
+            
+            if fetchedMessage is not None:
+                mockedMessage = MoCk(fetchedMessage.content)
+                await sendMessage(message.channel, mockedMessage)
+            else:
+                await sendMessage(message.channel, 'Failed to mock targeted message')
         
         # Mock x number of messages of target user
         elif len(message.mentions) > 0:
@@ -169,14 +286,17 @@ async def on_message(message):
             else:
                 messageHistory = await getMessageHistory(message.channel, 1000)
 
-                if numOfMessages == -1:
-                    filterMessages = filterMessageHistory(messageHistory, targetUser, 1)
+                if messageHistory is not None:
+                    if numOfMessages == -1:
+                        filterMessages = filterMessageHistory(messageHistory, targetUser, 1)
+                    else:
+                        filterMessages = filterMessageHistory(messageHistory, targetUser, numOfMessages)
+                    
+                    for msg in filterMessages:
+                        mockedMessage = MoCk(msg.content)
+                        await sendMessage(message.channel, targetUser.mention + ' ' + mockedMessage)
                 else:
-                    filterMessages = filterMessageHistory(messageHistory, targetUser, numOfMessages)
-
-                for msg in filterMessages:
-                    mockedMessage = MoCk(msg.content)
-                    await sendMessage(message.channel, targetUser.mention + ' ' + mockedMessage)
+                    await sendMessage(message.channel, 'Failed to mock historical message(s)')
         
         # Mock provided message
         else:
