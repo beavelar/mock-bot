@@ -1,5 +1,3 @@
-import re
-
 from mock_utl import *
 
 import discord
