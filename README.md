@@ -7,6 +7,7 @@ The goal of the bot is to "mock" the messages of target users in the Discord env
 - [Project Requirements](#project-requirements)
 - [Bot Permission Requirements](#bot-permission-requirements)
 - [Stand-Alone Project Setup](#stand-alone-project-setup)
+- [Usage](#usage)
 
 ----------------------------------
 
@@ -53,3 +54,19 @@ The following are permission requirements needed by the MoCk BoT
   - *python mock.py*
 - View Discord server
   - MoCk Bot should now appear as online and listening to channel messages
+  
+## Usage
+- To bring up the MoCk BoT help menu
+  - *!mock help*
+- To mock a typed message
+  - *!mock "message"*
+  - Ex. *!mock this message will be mocked*
+- To mock the last message sent from a user
+  - *!mock "@user"*
+  - Ex. *!mock @user1234*
+- To mock **X** number of messages from a user (Maximum of 10 messages)
+  - *!mock "@user" "number of messages to mock"*
+  - Ex. *!mock @user1234 10*
+- To mock a specific Discord message
+  - *!mock "Discord message URL"*
+  - Ex. *!mock https://discordapp.com/channels/1234/1234/1234*
