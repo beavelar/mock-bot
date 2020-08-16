@@ -1,3 +1,4 @@
+import os
 from mock_utl import *
 
 import discord
@@ -10,7 +11,8 @@ from discord_imp import *
 MOCK_TRIGGER = '!mock'
 
 try:
-    tokenFile = open('environment/.env', 'r')
+    # Comment line below for heroku deploy 
+    # tokenFile = open('environment/.env', 'r')
     helpMenuFile = open('environment/help_menu.txt', 'r')
 except Exception as ex:
     print('Exception caught attempting to open environment files')
@@ -20,7 +22,11 @@ except Exception as ex:
     exit(1)
 
 try:
-    BOT_TOKEN = tokenFile.read()
+    # Comment line below for heroku deploy
+    # BOT_TOKEN = tokenFile.read()
+
+    # Un-comment line below for heroku deploy
+    BOT_TOKEN = os.getenv('DISCORD_BOT_TOKEN')
     HELP_MENU = helpMenuFile.read()
 except Exception as ex:
     print('Exception caught attempting to read environment files')
