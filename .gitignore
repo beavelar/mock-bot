@@ -1,2 +1,6 @@
-environment/.env
+# Python artifacts
+.pytest_cache
 __pycache__
+
+# Environment
+.env
