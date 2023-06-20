@@ -37,7 +37,7 @@ The following are permission requirements of the MoCk BoT
 - Install the Python dependencies
   - **pip install -r requirements.txt**
 - Run the discord bot
-  - ****
+  - **python src/bot.py**
 ## Setup and Run with Docker
 - Build the docker image
   - **docker build -t mock-bot .**
