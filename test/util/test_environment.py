@@ -11,5 +11,5 @@ def test_init_environment():
     os.environ["BOT_TRIGGER"] = bot_trigger
 
     env = environment()
-    assert env.bot_token is bot_token
-    assert env.bot_trigger is bot_trigger
+    assert env.bot_token == bot_token
+    assert env.bot_trigger == bot_trigger
