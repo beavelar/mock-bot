@@ -1,72 +1,53 @@
 # MoCk-BoT
-This repository contains code for a Discord version of the Slack "mock" bot.
-
-The goal of the bot is to "mock" the messages of target users in the Discord environment.
-
-## Quick Links:
-- [Project Requirements](#project-requirements)
-- [Bot Permission Requirements](#bot-permission-requirements)
-- [Stand-Alone Project Setup](#stand-alone-project-setup)
-- [Usage](#usage)
+Discord bot replicate of the Slack "mock" bot.
 
 ----------------------------------
 
-## Project Requirements
-- Python
-  - [Python Organization Website](https://www.python.org/)
-- Discord library
-  - [Discord.py Installation Guide](https://discordpy.readthedocs.io/en/latest/intro.html)
-
 ## Bot Permission Requirements
-The following are permission requirements needed by the MoCk BoT
+The following are permission requirements of the MoCk BoT
  - **General Permissions**
    - View Channels
  - **Text Permissions**
    - Send Messages
-   - Manage Messages
-   - Embed Links
-   - Attach Files
    - Read Message History
-   - Mention everyone
    - Use External Emojis
+
+## Requirements
+*Project can be built/ran with Docker or docker-compose view the steps to setup and run the project with [Docker](#setup-and-run-with-docker) or [docker-compose](#setup-and-run-with-docker-compose)*
+- Python
    
-## Stand-Alone Project Setup
-- Clone the repository
+## Register and Invite Discord Bot
 - Create Discord bot account
   - [Creating a Bot Account Guide](https://discordpy.readthedocs.io/en/latest/discord.html#)
 - Invite Discord bot into your Discord server with proper permissions
   - [Inviting Your Bot Guide](https://discordpy.readthedocs.io/en/latest/discord.html#inviting-your-bot)
   - View [Bot Permission Requirements](#bot-permission-requirements) for the required permissions  
-- After cloning the repository, you should have a **MoCk-BoT** directory, navigate to **MoCk-BoT/environment** and create an empty .env file
-  - This will contain our bot secret token
-- Retrieve bot secret token
+
+## Setup Environment
+- Create a .env file. Utilize the .env.template file as a template
+- Set the **BOT_TOKEN** value to your bot token
   - In Discord developer page, navigate to "Bot"
   
     ![Discord Bot Selection](/images/bot-selection-snap.PNG)
   - Under "Token", reveal token by clicking on the "Click to Reveal Token" link
 
     ![Token Reveal](/images/token-reveal-snap.PNG)
-- Copy and paste bot token into .env file and save
-- Open a command line window of choice
-  - Command prompt, GitBash, etc.
-- Navigate to the project base directory
-- Execute the following command to spin up the bot:
-  - *python mock.py*
-- View Discord server
-  - MoCk Bot should now appear as online and listening to channel messages
-  
+
+## Setup and Run with Python
+- Install the Python dependencies
+  - **pip install -r requirements.txt**
+- Run the discord bot
+  - ****
+## Setup and Run with Docker
+- Build the docker image
+  - **docker build -t mock-bot .**
+- Run the build docker image
+  - **docker run mock-bot**
+
+## Setup and Run with docker-compose
+- Build and run the docker images
+  - **docker-compose up --build -d**
+
 ## Usage
-- To bring up the MoCk BoT help menu
-  - *!mock help*
-- To mock a typed message
-  - *!mock "message"*
-  - Ex. *!mock this message will be mocked*
-- To mock the last message sent from a user
-  - *!mock "@user"*
-  - Ex. *!mock @user1234*
-- To mock **X** number of messages from a user (Maximum of 10 messages)
-  - *!mock "@user" "number of messages to mock"*
-  - Ex. *!mock @user1234 10*
-- To mock a specific Discord message
-  - *!mock "Discord message URL"*
-  - Ex. *!mock https://discordapp.com/channels/1234/1234/1234*
+- To mock the previous message
+  - *!mock*
