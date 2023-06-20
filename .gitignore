@@ -1,2 +1,2 @@
-environment/.env
 __pycache__
+.env
